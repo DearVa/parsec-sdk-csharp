@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParsecSharp.AutoGen", "ParsecSharp.AutoGen\ParsecSharp.AutoGen.csproj", "{23E0E491-E98E-4293-B8D3-21442AE6F5E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParsecSharp", "ParsecSharp\ParsecSharp.csproj", "{6F9ED4C8-A1F2-44BA-BFBF-50318A228F01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParsecSharp.Tests", "ParsecSharp.Tests\ParsecSharp.Tests.csproj", "{5F8FACA2-1A08-4FA5-9CA8-426DFCCF2215}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{23E0E491-E98E-4293-B8D3-21442AE6F5E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23E0E491-E98E-4293-B8D3-21442AE6F5E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23E0E491-E98E-4293-B8D3-21442AE6F5E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23E0E491-E98E-4293-B8D3-21442AE6F5E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F9ED4C8-A1F2-44BA-BFBF-50318A228F01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F9ED4C8-A1F2-44BA-BFBF-50318A228F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F9ED4C8-A1F2-44BA-BFBF-50318A228F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F9ED4C8-A1F2-44BA-BFBF-50318A228F01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F8FACA2-1A08-4FA5-9CA8-426DFCCF2215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F8FACA2-1A08-4FA5-9CA8-426DFCCF2215}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F8FACA2-1A08-4FA5-9CA8-426DFCCF2215}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F8FACA2-1A08-4FA5-9CA8-426DFCCF2215}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
