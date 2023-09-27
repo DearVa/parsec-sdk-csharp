@@ -445,3 +445,5 @@ FodyWeavers.xsd
 *.sln.iml
 
 !src/LightweightUv/Win32
+
+credentials.json

@@ -11,7 +11,7 @@ public static class Api
     
     private static readonly HttpClient Client = new();
     
-    private static async ValueTask<HttpResponseMessage> Get(string path, string? query = null)
+    private static async ValueTask<HttpResponseMessage> Get(string path, string? query = null, IDictionary<string, string?>? headers = null)
     {
         var uri = BaseAddress + path;
         if (query is not null)
@@ -20,6 +20,13 @@ public static class Api
         }
         
         var request = new HttpRequestMessage(HttpMethod.Get, uri);
+        if (headers is not null)
+        {
+            foreach (var (key, value) in headers)
+            {
+                request.Headers.Add(key, value);
+            }
+        }
         return await Client.SendAsync(request);
     }
     
@@ -112,14 +119,23 @@ public static class Api
     
     public static async ValueTask<GetHostsResult> GetHosts(GetHostsQueryParams queryParams)
     {
-        var query = JsonSerializer.Serialize(queryParams, new JsonSerializerOptions
+        var query = new StringBuilder();
+        query.Append("mode=").Append(queryParams.Mode switch
         {
-            Converters =
-            {
-                new HostModeJsonConverter()
-            }
+            HostMode.Desktop => "desktop",
+            HostMode.Game => "game",
+            _ => throw new ArgumentOutOfRangeException(nameof(queryParams.Mode))
         });
-        var response = await Get("/v1/hosts", query);
+        if (queryParams.IsPublic is not null)
+        {
+            query.Append("&public=");
+            query.Append(queryParams.IsPublic.Value);
+        }
+        
+        var response = await Get("/v2/hosts", query.ToString(), new Dictionary<string, string?>
+        {
+            { "Authorization", "Bearer " + queryParams.SessionId },
+        });
         response.EnsureSuccessStatusCode();
         
         return JsonSerializer.Deserialize<GetHostsResult>(await response.Content.ReadAsStringAsync()) ??
@@ -131,6 +147,7 @@ public static class Api
         Desktop,
         Game
     }
+    
     
     private class HostModeJsonConverter : JsonConverter<HostMode>
     {
@@ -157,10 +174,10 @@ public static class Api
 
     public class GetHostsQueryParams
     {
-        [JsonPropertyName("mode")]
-        public HostMode Mode { get; init; }
+        public required string SessionId { get; init; }
         
-        [JsonPropertyName("public")]
+        public required HostMode Mode { get; init; }
+        
         public bool? IsPublic { get; init; }
     }
     
