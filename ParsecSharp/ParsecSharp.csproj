@@ -1,18 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <TargetFrameworks>net6.0;net7.0;netstandard2.1</TargetFrameworks>
+        <LangVersion>7.3</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <None Remove="ParsecSharp-symbols.cpp" />
+      <Compile Remove="Std.cs" />
+      <Compile Remove="ParsecSharp.g.cs" />
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="Std.cs" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="ParsecSharp-symbols.cpp" />
     </ItemGroup>
 
 </Project>
