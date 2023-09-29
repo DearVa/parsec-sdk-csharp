@@ -1063,6 +1063,13 @@ namespace ParsecSharp
 		
 		public Status ClientConnect(ClientConfig cfg, string sessionID, string peerID)
 		{
+			if (cfg.Protocol != Protocol.Bud || cfg.Protocol != Protocol.Sctp)
+			{
+				// Important!! This is a workaround for a bug in the Parsec SDK.
+				// If unset, the application will crash when the client connects.
+				throw new InvalidOperationException("Invalid protocol");
+			}
+			
 			var pSessionID = (sbyte*)MarshalUtil.StringToHGlobal(sessionID).ToPointer();
 			var pPeerID = (sbyte*)MarshalUtil.StringToHGlobal(peerID).ToPointer();
 			var status = ClientConnect(cfg, pSessionID, pPeerID);
@@ -2570,7 +2577,7 @@ namespace ParsecSharp
 		{
 			internal int decoderSoftware;
 			internal int mediaContainer;
-			internal int protocol;
+			internal Protocol protocol;
 			internal int resolutionX;
 			internal int resolutionY;
 			internal int refreshRate;
@@ -2618,7 +2625,7 @@ namespace ParsecSharp
 		}
 
 		/// <summary>::ParsecProtocol value.</summary>
-		public int Protocol
+		public Protocol Protocol
 		{
 			get => instance.protocol;
 			set => instance.protocol = value;

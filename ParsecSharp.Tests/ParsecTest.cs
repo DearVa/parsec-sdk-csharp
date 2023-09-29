@@ -25,7 +25,7 @@ public class ParsecTest
 			ResolutionX = 1920,
 			ResolutionY = 1080,
 			RefreshRate = 60,
-			Protocol = 1
+			Protocol = Protocol.Bud
 		};
 		
 		var status = parsec.ClientConnect(clientConfig, authResult.SessionId, hosts.Data[0].PeerId);
