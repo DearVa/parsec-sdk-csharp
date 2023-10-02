@@ -12,9 +12,42 @@ public class ParsecSharpLibrary : ILibrary
 {
     public void Preprocess(Driver driver, ASTContext ctx)
     {
+        ctx.SetClassAsValueType("ParsecConfig");
+        ctx.SetClassAsValueType("ParsecClientConfig");
+        ctx.SetClassAsValueType("ParsecHostConfig");
+        
+        ctx.SetClassAsValueType("ParsecFrame");
+        ctx.SetClassAsValueType("ParsecCursor");
+        ctx.SetClassAsValueType("ParsecPermissions");
+        ctx.SetClassAsValueType("ParsecMetrics");
+        ctx.SetClassAsValueType("ParsecGuest");
+        
+        ctx.SetClassAsValueType("ParsecKeyboardMessage");
+        ctx.SetClassAsValueType("ParsecMouseButtonMessage");
+        ctx.SetClassAsValueType("ParsecMouseWheelMessage");
+        ctx.SetClassAsValueType("ParsecMouseMotionMessage");
+        ctx.SetClassAsValueType("ParsecGamepadButtonMessage");
+        ctx.SetClassAsValueType("ParsecGamepadAxisMessage");
+        ctx.SetClassAsValueType("ParsecGamepadUnplugMessage");
+        ctx.SetClassAsValueType("ParsecMessage");
+        
+        ctx.SetClassAsValueType("ParsecClientStatus");
+        ctx.SetClassAsValueType("ParsecClientCursorEvent");
+        ctx.SetClassAsValueType("ParsecClientRumbleEvent");
+        ctx.SetClassAsValueType("ParsecClientUserDataEvent");
+        ctx.SetClassAsValueType("ParsecClientEvent");
+        ctx.SetClassAsValueType("ParsecHostStatus");
+        ctx.SetClassAsValueType("ParsecGuestStateChangeEvent");
+        ctx.SetClassAsValueType("ParsecUserDataEvent");
+        ctx.SetClassAsValueType("ParsecHostEvent");
+        
+        ctx.SetEnumAsFlags("ParsecGuestState");
+        
         driver.AddTranslationUnitPass(new RegexRenamePass("^Parsec(?!$)", ""));
         driver.AddTranslationUnitPass(new MoveFunctionsToInstanceMethodPass());
         driver.AddTranslationUnitPass(new MoveFunctionsToParsecMethodPass());
+        driver.AddTranslationUnitPass(new RemoveCopyConstructorsPass());
+        driver.AddTranslationUnitPass(new CustomModifierPass());
         driver.AddTranslationUnitPass(new RenameEnumPass());
     }
 
@@ -30,6 +63,8 @@ public class ParsecSharpLibrary : ILibrary
         module.Headers.Add("parsec.h");
         module.LibraryDirs.Add(@"..\sdk\windows");
         module.Libraries.Add("parsec.lib");
+        module.OutputNamespace = "ParsecSharp";
+        module.LibraryName = "ParsecSharp.g";
     }
 
     public void SetupPasses(Driver driver)
@@ -146,6 +181,48 @@ public class ParsecSharpLibrary : ILibrary
             function.ExplicitlyIgnore();
             
             return base.VisitFunctionDecl(function);
+        }
+    }
+    
+    private class RemoveCopyConstructorsPass : TranslationUnitPass
+    {
+        public override bool VisitMethodDecl(Method method)
+        {
+            // 如果这个方法是一个构造函数并且只有一个参数
+            if (!method.IsConstructor || method.Parameters.Count != 1) return false;
+            // 如果参数类型与所在的类相同
+            if (method.Parameters[0].Type.ToString() != method.Type.ToString()) return false;
+            // 删除这个构造函数
+            method.ExplicitlyIgnore();
+            return true;
+        }
+    }
+
+    private class CustomModifierPass : TranslationUnitPass
+    {
+        public override bool VisitMethodDecl(Method method)
+        {
+            if (AlreadyVisited(method)) return false;
+            if (!method.IsGenerated) return false;
+            
+            if (method.QualifiedName is "Parsec::Init" or "Parsec::Destroy")
+            {
+                method.Access = AccessSpecifier.Internal;
+            }
+            
+            var modified = false;
+
+            foreach (var parameter in method.Parameters)
+            {
+                var pointee = parameter.Type.GetPointee();
+                if (pointee is PointerType)
+                {
+                    // 多指针
+                    parameter.QualifiedType = new QualifiedType(new BuiltinType(PrimitiveType.IntPtr));
+                }
+            }
+
+            return modified || base.VisitMethodDecl(method);
         }
     }
 
